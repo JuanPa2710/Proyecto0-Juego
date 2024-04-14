@@ -1,5 +1,7 @@
 from random import randrange
+
 historial = []
+jugadas = {"t": ["l", "p"], "p": ["r", "s"], "r": ["l", "t"], "l": ["p", "s"], "s": ["r", "t"]}
 
 """ Funcionees que faltan por hacer:            
 - verificarResultado(jugadaMaquina, jugadaUsuario)
@@ -230,6 +232,57 @@ def primerNivel():
     return posibilidades[randrange(5)]
 
 
+
+def segundoNivel():
+    """
+    Función que utiliza la estrategia Contra los más comunes(Explicación en
+    la documentación)
+    
+    Entradasy restricciones:
+    -Ninguna
+    Salidas:
+    -Una jugada (string con la letra inicial de la jugada)
+    """
+
+    if(len(historial) <= 5):
+        return primerNivel()
+
+    histNuevo = {( historial.count(x) * 100 // len(historial)): x for x in historial}
+    porcen = dict(sorted(histNuevo.items(), reverse = True))
+
+    for i in range(len(porcen), 2, -1):
+        porcen.popitem()
+
+    posibilidades = []
+    
+    for valor in porcen.values():
+        posibilidades += jugadas[valor][0]
+        posibilidades += jugadas[valor][1]
+
+    eliminarRepetido(posibilidades)
+
+    return posibilidades[randrange(len(posibilidades))]
+
+
+
+def eliminarRepetido(L):
+    """
+    Función que elimina valores repetidos si lo hay en una lista
+
+    Entradas y restricciones:
+    -L: lista de valores cualesquiera
+    Salidas:
+    -Lista con valores repetidos eliminados si lo hay, sino
+    devuelve la misma lista
+    """
+
+    for letra in L:
+        if(L.count(letra) > 1):
+            for i in range(L.count(letra) - 1):
+                L.remove(letra)
+
+
+    return L
 
 def mensajeDespedida(nombreJugador):
     """
