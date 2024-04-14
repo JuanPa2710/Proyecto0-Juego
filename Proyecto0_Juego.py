@@ -1,10 +1,20 @@
 from random import randrange
+historial = []
 
 """ Funcionees que faltan por hacer:            
-- simularRonda(nivel)                                        #La cambié a obtenerJugadaMaquina()
-- verificarResultado(jugadaUsuario, jugadaMaquina)           #Este verifica quien gana, pierde o si empatan
+- verificarResultado(jugadaMaquina, jugadaUsuario)
+Función que comapra las jugadas del usuario y de la máquina, imprime el ganador y devuelve la inicial en minúscula del ganador
+Entradas y Restricciones:
+    - jugadaMáquina
+    - jugadaUsuario
+    Salidas:
+    - u: Victoria del usuario
+    - m: Victoria de la máquina
+    - e: Empate
+    
+- mostrarMarcador()
+Procedimiento que recibe 
 """
-
 
 def main():
     """
@@ -16,24 +26,25 @@ def main():
     mensajeBienvenida()
     continuar = True
     nombreJugador = obtenerNombre()
-    nivelDificultad = obtenerNivel()
-    
+    global historial
+    historial = []
     while continuar == True:
-
+        nivelDificultad = obtenerNivel()
         mismaRonda = True
-        
+        marcador = {"u": 0, "m": 0, "e": 0}
         while mismaRonda == True:
             limpiarPantalla()
             print("¡Empieza el juego¡")
-
+            
+            jugadaMaquina = obtenerJugadaMaquina(nivelDificultad)
             jugadaUsuario = obtenerJugadaUsuario()
-            jugadaMaquina = obtenerJugadaMaquina(nivelDificultad, jugadaUsuario)
-
-            verificarResultado():
-
-            
-            
-        
+            if jugadaUsuario != "x":
+                resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
+                mostrarMarcador(resultado)
+                marcador[resultado] += 1 
+            else:
+                mismaRonda == False
+                
     mensajeDespedida(nombreJugador)
 
 
@@ -168,20 +179,21 @@ def obtenerJugadaUsuario():
     Salidas:
     -Devuelve el arma del usuario
     """
-
+    global historial
     arma = input("\nOpciones de arma: " +
                  "\n\nR para piedra \nP para papel \nT para tijera \nL para lagarto \nS para spock \nX para salir \n\nEscoja su arma: ")
 
     while(validarArma(arma) == False):
+        limpiarPantalla()
         print("¡Opción invalida¡ Intente de nuevo")
         arma = input("\nOpciones de arma: " +
                  "\n\nR para piedra \nP para papel \nT para tijera \nL para lagarto \nS para spock \nX para salir \n\nEscoja su arma: ")
-
+    historial += [arma]
     return arma
 
 
 
-def obtenerJugadaMaquina(nivel, armaRival):
+def obtenerJugadaMaquina(nivel):
     """
     Función que a partir de la jugada del usuario y nivel de dificultad de juego
     escoge el arma con la que juega la maquina
@@ -228,5 +240,3 @@ def mensajeDespedida(nombreJugador):
     - Texto de despedida
     """
     print("Gracias por jugar, " + nombreJugador + ". Hasta la próxima...")
-    
-
