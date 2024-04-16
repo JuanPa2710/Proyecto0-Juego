@@ -1,21 +1,10 @@
 from random import randrange
+import time
 
 historial = []
 jugadas = {"t": ["l", "p"], "p": ["r", "s"], "r": ["l", "t"], "l": ["p", "s"], "s": ["r", "t"]}
 
-""" Funcionees que faltan por hacer:            
-- verificarResultado(jugadaMaquina, jugadaUsuario)
-Función que comapra las jugadas del usuario y de la máquina, imprime el ganador y devuelve la inicial en minúscula del ganador
-Entradas y Restricciones:
-    - jugadaMáquina
-    - jugadaUsuario
-    Salidas:
-    - u: Victoria del usuario
-    - m: Victoria de la máquina
-    - e: Empate
-    
-- mostrarMarcador()
-Procedimiento que recibe 
+""" Funcionees que faltan por hacer:   
 """
 
 def main():
@@ -42,8 +31,10 @@ def main():
             jugadaUsuario = obtenerJugadaUsuario()
             if jugadaUsuario != "x":
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
-                mostrarMarcador(resultado)
-                marcador[resultado] += 1 
+                print(resultado)
+                mostrarMarcador(resultado, nombreJugador, jugadaUsuario, jugadaMaquina)
+                marcador[resultado] += 1
+                time.sleep(3)
             else:
                 mismaRonda == False
                 
@@ -75,11 +66,11 @@ $$$$  $$$$$         &&&&    &&&&     &&&&&&&&&&&&&
 $$$$  $$$$$           &&    &&       &&&&&&&&&&&&&
 $$$$  $$$$$ $$$       &&&&&&&&       &&&&&&&&&&&&&
 $$$$$$$$$$$$$$        ++&&&&++       &&&&&&&&&&&&&
-$$$$$$$$$$$$        ++++xXXx++++     &&&&&&&&&&&&&
-  xxxxxxxxx         ++++++++++++     &&&&&&&&&&&&&
-  ++++++++            ++    ++       &&&&&&&&&&&&&
+$$$$$$$$$$$$        ++++    ++++     &&&&&&&&&&&&&
+  ++++++++         +  ++++++++  +    &&&&&&&&&&&&&
+  ++++++++          ++++    ++++     &&&&&&&&&&&&&
                                                   
-                                                  
+                                                   
         xx     xxx                                
        xxxxx   xxxxx                 XXXXXXX      
   xxxx   xxxx    xxx               XXXXXXXXXXX    
@@ -210,7 +201,7 @@ def obtenerJugadaMaquina(nivel):
     if(nivel == 1):
         return primerNivel()
     elif(nivel == 2):
-        return primerNivel()
+        return segundoNivel()
     elif(nivel == 3):
         return primerNivel()
     elif(nivel == 4):
@@ -219,6 +210,46 @@ def obtenerJugadaMaquina(nivel):
         return primerNivel()
 
 
+
+def verificarResultado(jugadaUsuario, jugadaMaquina):
+    """
+    Función que compara las jugadas del usuario y de la máquina,
+    imprime el ganador y devuelve la inicial en minúscula del ganador
+    
+    Entradas y Restricciones:
+    - jugadaMáquina
+    - jugadaUsuario
+    Salidas:
+    - u: Victoria del usuario
+    - m: Victoria de la máquina
+    - e: Empate
+    """
+    if(jugadaUsuario == jugadaMaquina):
+        return "e"
+    elif(jugadaMaquina in jugadas[jugadaUsuario]):
+        return "m"
+    else:
+        return "u"
+
+
+
+def mostrarMarcador(resultado, usuario, jugUsuario, jugMaquina):
+    """
+    Procedimiento que recibe el resultado de la ronda e imprime la información,
+    del ganador
+
+    Entradas:
+    -Resultado: string con inicial del resultado de la ronda (m = maquina, e = empate y u = usuario)
+    """
+    print(f"Jugada de {usuario.capitalize()}: {jugUsuario}")
+    print(f"Jugada de la máquina: {jugMaquina}")
+    
+    if(resultado == "e"):        
+        print("/nLa ronda concluyó con empate!")
+    elif(resultado == "u"):
+        print(f"La victoria es de {usuario.capitalize()}!")
+    else:
+        print("La victoria es para la máquina!")
 
 def primerNivel():
     """
@@ -244,11 +275,11 @@ def segundoNivel():
     -Una jugada (string con la letra inicial de la jugada)
     """
 
-    if(len(historial) <= 5):
+    if(len(historial) <= 8):
         return primerNivel()
 
-    histNuevo = {( historial.count(x) * 100 // len(historial)): x for x in historial}
-    porcen = dict(sorted(histNuevo.items(), reverse = True))
+    historialNuevo = {( historial.count(x) * 100 // len(historial)): x for x in historial}
+    porcen = dict(sorted(historialNuevo.items(), reverse = True))
 
     for i in range(len(porcen), 2, -1):
         porcen.popitem()
