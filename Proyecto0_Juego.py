@@ -1,7 +1,3 @@
-#Hay que reemplazar la función time.sleep por algo mas amigable para el usuario.
-#Hay que definir el 5to nivel.
-#Hay que hacer la documentación del proyecto.
-
 from random import randrange
 import time
 import keyboard
@@ -42,7 +38,7 @@ def main():
         marcador = {"u": 0, "m": 0, "e": 0}
         while mismaRonda == True:
             
-            jugadaMaquina = menuPrincipal(opcion, resultado)
+            jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
             jugadaUsuario = obtenerJugadaUsuario()
             
             if jugadaUsuario == "x":
@@ -54,8 +50,8 @@ def main():
                 mostrarMarcador(resultado, nombreJugador, jugadaUsuario, jugadaMaquina)
                 marcador[resultado] += 1
                 #time.sleep(4)
-                print('Presione "Enter" para continuar...')
-                keyboard.wait('enter', True)
+                #print('Presione "Enter" para continuar...')
+                #keyboard.wait('enter', True)
                 
     mensajeDespedida(nombreJugador)
 
@@ -116,20 +112,6 @@ def obtenerNombre():
         nombre = input("Ingrese el  nombre con el que desea jugar: ")
     return nombre
 
-def validarArma(arma):
-    """
-    Función que valida si el nivel ingresado por el usuario
-    es un opción valida
-
-    Entradas y restricciones:
-    -Opción de arma escogida por el usuario
-    Salidas:
-    -True si el arma escogida es una opción valida, sino False
-    """
-    armaLower = arma.lower()
-    armas = ["r", "p", "t", "l", "s","x"]
-
-    return False if(not armaLower in armas) else True
 
 def menuPrincipal():
     """
@@ -141,9 +123,13 @@ def menuPrincipal():
     -Devuelve el nivel de dificultad, la página de estadísticas o cierra el juego.
     """
     nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
-    while validarNivel(nivel) == False or (int(nivel) < 1 or int(nivel) > 7):
+
+    while validarNivel(nivel) == False or (int(nivel) < 1 or int(nivel) > 7 ):
         print("La opción ingresada no es valida. Por favor ingresela de nuevo")
         nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
+
+    limpiarPantalla()
+    
     return int(nivel)
 
 def estadisticas():
@@ -178,17 +164,30 @@ def estadisticas():
         print(f"Empates: {empates}\t{float(empates) / len(historialJugador) * 100}%\n")
         #print(f"Arma más usada: {armaFavorita}")
 
+
 def validarNivel(n):
-    """
-    Función que evalúa un entero para saber si es un nivel válido
-    Entradas y Restricciones:
-    - n: Entero
-    Salidas:
-    True or False
-    """
-    if type(n) != int:
+    try:
+       int(n)
+       return True
+    except:
         return False
-    return True
+
+
+def validarArma(arma):
+    """
+    Función que valida si el nivel ingresado por el usuario
+    es un opción valida
+
+    Entradas y restricciones:
+    -Opción de arma escogida por el usuario
+    Salidas:
+    -True si el arma escogida es una opción valida, sino False
+    """
+    
+    armas = ["r", "p", "t", "l", "s","x"]
+
+    return False if(not arma in armas) else True
+        
 
 def obtenerJugadaUsuario():
     """
@@ -199,15 +198,21 @@ def obtenerJugadaUsuario():
     -Devuelve el arma del usuario
     """
     global historialJugador
+    
     arma = input("\nOpciones de arma: " +
                  "\n\nR para piedra \nP para papel \nT para tijera \nL para lagarto \nS para spock \nX para salir \n\nEscoja su arma: ")
-    while(validarArma(arma) == False):
+
+    armaLower = arma.lower()
+    
+    while(validarArma(armaLower) == False):
         limpiarPantalla()
         print("¡Opción invalida¡ Intente de nuevo")
         arma = input("\nOpciones de arma: " +
                  "\n\nR para piedra \nP para papel \nT para tijera \nL para lagarto \nS para spock \nX para salir \n\nEscoja su arma: ")
-    historialJugador += arma
-    return arma
+        armaLower = arma.lower()
+
+    historialJugador += armaLower 
+    return armaLower
 
 def obtenerJugadaMaquina(nivel, resultado):
     """
@@ -299,22 +304,27 @@ def segundoNivel():
     Salidas:
     -Una jugada (string con la letra inicial de la jugada escogida al azar)
     """
-    if(len(historialJugador) <= 5):
+    if(len(historialJugador) <= 8):
         return primerNivel()
     
     historialNuevo = {( historialJugador.count(x) * 100 // len(historialJugador)): x for x in historialJugador}
     porcen = dict(sorted(historialNuevo.items(), reverse = True))
+
+    print(porcen)
     
     for i in range(len(porcen), 2, -1):
         porcen.popitem()
     posibilidades = []
 
+    
     for llave in jugadas:
         for valor in porcen.values():            
             if(valor in jugadas[llave]):
                 posibilidades += llave
                 
     eliminarRepetido(posibilidades)
+    
+    print(posibilidades)
     return posibilidades[randrange(len(posibilidades))]
 
 def tercerNivel():
@@ -328,6 +338,7 @@ def tercerNivel():
     """
     if len(historialJugador) < 1:
         return primerNivel()
+    
     ultimaJugadaUsuario = []
     posibleJugadaUsuario = []
     posibilidades = []
@@ -340,6 +351,8 @@ def tercerNivel():
             if y in jugadas[x]:
                 posibilidades += x
         posibilidades = eliminarRepetido(posibilidades)
+        
+        print(posibilidades)
         return posibilidades[randrange(len(posibilidades))]
 
 def cuartoNivel(resultado):
@@ -370,7 +383,9 @@ def cuartoNivel(resultado):
                     posibleContra += jugada
         posibilidades = [x for x in posibleContra if posibleContra.count(x) >= 2]
         posibilidaes = eliminarRepetido(posibilidades)
-        return posibilidades
+        return posibilidades[randrange(len(posibilidades))]
+
+    
 
 def eliminarRepetido(L):
     """
@@ -386,37 +401,6 @@ def eliminarRepetido(L):
             for i in range(L.count(letra) - 1):
                 L.remove(letra)
     return L
-
-
-
-def estadisticas():
-    """
-    Procedimiento que retorna las estadísticaas del juego en general e información relevante para el usuario.
-    E y R:
-        - Ninguna
-    S:
-        - Imprime la información relevante en pantalla
-    """
-    victorias = 0
-    derrotas = 0
-    empates = 0
-    armaGanadora = []
-    armaPerdedora = []
-    #armaFavorita = {arma: historialJugador.count(arma)for arma in historialJugador}
-    
-    for x in range(len(historialJugador)):
-        if verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
-            victorias =+ 1
-            armaGanadora += historialJugador[x]
-        elif verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
-            derrotas =+ 1
-            armaPerdedora += historialJugador[x]
-        else:
-            empates += 1
-    print(f"Victorias: {victorias}\t{float(victorias) / len(historialJugador) * 100}%")
-    print(f"Derrotas: {derrotas}\t{float(derrotas) / len(historialJugador) * 100}%")
-    print(f"Empates: {empates}\t{float(empates) / len(historialJugador) * 100}%\n")
-    #print(f"Arma más usada: {armaFavorita}")
 
 
     
