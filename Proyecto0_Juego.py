@@ -32,7 +32,7 @@ def main():
         resultado = ""
         
         if(opcion == 6):
-            pass
+            estadisticas()
         elif(opcion == 7):
             limpiarPantalla()
             continuar = False
@@ -41,7 +41,6 @@ def main():
             
         marcador = {"u": 0, "m": 0, "e": 0}
         while mismaRonda == True:
-            limpiarPantalla()
             
             jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
             jugadaUsuario = obtenerJugadaUsuario()
@@ -54,7 +53,7 @@ def main():
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
                 mostrarMarcador(resultado, nombreJugador, jugadaUsuario, jugadaMaquina)
                 marcador[resultado] += 1
-
+                #time.sleep(4)
                 print('Presione "Enter" para continuar...')
                 keyboard.wait('enter', True)
                 
@@ -142,11 +141,42 @@ def menuPrincipal():
     -Devuelve el nivel de dificultad, la página de estadísticas o cierra el juego.
     """
     nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
-    while(validarNivel(nivel) == False and (int(nivel) < 1 or int(nivel) > 7)):
-        limpiarPantalla()
+    while validarNivel(nivel) == False or (int(nivel) < 1 or int(nivel) > 7):
         print("La opción ingresada no es valida. Por favor ingresela de nuevo")
         nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
     return int(nivel)
+
+def estadisticas():
+    """
+    Procedimiento que retorna las estadísticaas del juego en general e información relevante para el usuario.
+    E y R:
+        - Ninguna
+    S:
+        - Imprime la información relevante en pantalla
+    """
+    limpiarPantalla()
+    if len(historialJugador) == 0:
+        print("Aún no se han jugado partidas :p")
+    else:
+        victorias = 0
+        derrotas = 0
+        empates = 0
+        armaGanadora = []
+        armaPerdedora = []
+        #armaFavorita = {arma: historialJugador.count(arma)for arma in historialJugador}
+        for x in range(len(historialJugador)):
+            if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
+                victorias =+ 1
+                armaGanadora += historialJugador[x]
+            elif verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
+                derrotas =+ 1
+                armaPerdedora += historialJugador[x]
+            else:
+                empates += 1
+        print(f"Victorias: {victorias}\t{float(victorias) / len(historialJugador) * 100}%")
+        print(f"Derrotas: {derrotas}\t{float(derrotas) / len(historialJugador) * 100}%")
+        print(f"Empates: {empates}\t{float(empates) / len(historialJugador) * 100}%\n")
+        #print(f"Arma más usada: {armaFavorita}")
 
 def validarNivel(n):
     """
@@ -209,11 +239,7 @@ def obtenerJugadaMaquina(nivel, resultado):
         return jugada
     elif nivel == 5:
         print("simular nivel 5")
-        pass
-    elif nivel == 6:
-        print("simular estadísticas")
-    else:
-        print("salir del juego")
+        raise Exception("Niven aún no implementado")
 
 def verificarResultado(jugadaUsuario, jugadaMaquina):
     """
