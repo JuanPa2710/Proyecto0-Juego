@@ -32,7 +32,7 @@ def main():
         resultado = ""
         
         if(opcion == 6):
-            pass
+            estadisticas()
         elif(opcion == 7):
             limpiarPantalla()
             continuar = False
@@ -43,7 +43,7 @@ def main():
         while mismaRonda == True:
             limpiarPantalla()
             
-            jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
+            jugadaMaquina = menuPrincipal(opcion, resultado)
             jugadaUsuario = obtenerJugadaUsuario()
             
             if jugadaUsuario == "x":
@@ -360,6 +360,39 @@ def eliminarRepetido(L):
             for i in range(L.count(letra) - 1):
                 L.remove(letra)
     return L
+
+
+
+def estadisticas():
+    """
+    Procedimiento que retorna las estadísticaas del juego en general e información relevante para el usuario.
+    E y R:
+        - Ninguna
+    S:
+        - Imprime la información relevante en pantalla
+    """
+    victorias = 0
+    derrotas = 0
+    empates = 0
+    armaGanadora = []
+    armaPerdedora = []
+    #armaFavorita = {arma: historialJugador.count(arma)for arma in historialJugador}
+    
+    for x in range(len(historialJugador)):
+        if verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
+            victorias =+ 1
+            armaGanadora += historialJugador[x]
+        elif verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
+            derrotas =+ 1
+            armaPerdedora += historialJugador[x]
+        else:
+            empates += 1
+    print(f"Victorias: {victorias}\t{float(victorias) / len(historialJugador) * 100}%")
+    print(f"Derrotas: {derrotas}\t{float(derrotas) / len(historialJugador) * 100}%")
+    print(f"Empates: {empates}\t{float(empates) / len(historialJugador) * 100}%\n")
+    #print(f"Arma más usada: {armaFavorita}")
+
+
     
 def mensajeDespedida(nombreJugador):
     """
