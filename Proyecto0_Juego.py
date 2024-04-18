@@ -1,10 +1,11 @@
-#Hay que arreglar la función obtenerNivel(). Hay que cambiarla a "menuprincipal()" e incluirle opciones: X para salir del juego, el nivel 5 y la opción de estadísticas.
 #Hay que reemplazar la función time.sleep por algo mas amigable para el usuario.
 #Hay que definir el 5to nivel.
 #Hay que hacer la documentación del proyecto.
 
 from random import randrange
 import time
+import keyboard
+
 historialJugador = []
 historialMaquina = []
 jugadas = {"t": ["l", "p"], "p": ["r", "s"], "r": ["l", "t"], "l": ["p", "s"], "s": ["r", "t"]}
@@ -18,19 +19,33 @@ def main():
     """
     global historialJugador
     historialJugador = []
+    
     mensajeBienvenida()
     continuar = True
-    nombreJugador = obtenerNombre()    
+    
+    nombreJugador = obtenerNombre()
+    
+        
     while continuar == True:
-        nivelDificultad = menuPrincipal()
-        mismaRonda = True
+        opcion = menuPrincipal()
+        mismaRonda = False
+        resultado = ""
+        
+        if(opcion == 6):
+            pass
+        elif(opcion == 7):
+            limpiarPantalla()
+            continuar = False
+        else:
+            mismaRonda = True
+            
         marcador = {"u": 0, "m": 0, "e": 0}
         while mismaRonda == True:
             limpiarPantalla()
-            print("¡Empieza el juego!")
-            resultado = ""
-            jugadaMaquina = obtenerJugadaMaquina(nivelDificultad, resultado)
+            
+            jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
             jugadaUsuario = obtenerJugadaUsuario()
+            
             if jugadaUsuario == "x":
                 mismaRonda = False
                 historialJugador = historialJugador[:(len(historialJugador) - 1)]
@@ -39,7 +54,10 @@ def main():
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
                 mostrarMarcador(resultado, nombreJugador, jugadaUsuario, jugadaMaquina)
                 marcador[resultado] += 1
-                time.sleep(8)
+
+                print('Presione "Enter" para continuar...')
+                keyboard.wait('enter', True)
+                
     mensajeDespedida(nombreJugador)
 
 def limpiarPantalla():
@@ -124,7 +142,8 @@ def menuPrincipal():
     -Devuelve el nivel de dificultad, la página de estadísticas o cierra el juego.
     """
     nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
-    while(validarNivel(nivel) == False or (int(nivel) < 1 or int(nivel) > 7)):
+    while(validarNivel(nivel) == False and (int(nivel) < 1 or int(nivel) > 7)):
+        limpiarPantalla()
         print("La opción ingresada no es valida. Por favor ingresela de nuevo")
         nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
     return int(nivel)
@@ -193,10 +212,8 @@ def obtenerJugadaMaquina(nivel, resultado):
         pass
     elif nivel == 6:
         print("simular estadísticas")
-        pass
     else:
         print("salir del juego")
-        pass
 
 def verificarResultado(jugadaUsuario, jugadaMaquina):
     """
@@ -256,16 +273,21 @@ def segundoNivel():
     Salidas:
     -Una jugada (string con la letra inicial de la jugada escogida al azar)
     """
-    if(len(historialJugador) <= 8):
+    if(len(historialJugador) <= 5):
         return primerNivel()
+    
     historialNuevo = {( historialJugador.count(x) * 100 // len(historialJugador)): x for x in historialJugador}
     porcen = dict(sorted(historialNuevo.items(), reverse = True))
+    
     for i in range(len(porcen), 2, -1):
         porcen.popitem()
     posibilidades = []
-    for valor in porcen.values():
-        posibilidades += jugadas[valor][0]
-        posibilidades += jugadas[valor][1]
+
+    for llave in jugadas:
+        for valor in porcen.values():            
+            if(valor in jugadas[llave]):
+                posibilidades += llave
+                
     eliminarRepetido(posibilidades)
     return posibilidades[randrange(len(posibilidades))]
 
@@ -283,7 +305,7 @@ def tercerNivel():
     ultimaJugadaUsuario = []
     posibleJugadaUsuario = []
     posibilidades = []
-    ultimaJugadaUsuario = historial[len(historial) - 1]
+    ultimaJugadaUsuario = historialJugador[len(historialJugador) - 1]
     for x in jugadas:
         if ultimaJugadaUsuario in jugadas[x]:
             posibleJugadaUsuario += x
