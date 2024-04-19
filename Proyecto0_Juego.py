@@ -1,9 +1,10 @@
 from random import randrange
 import time
-#import keyboard
+import keyboard
 
 historialJugador = []
 historialMaquina = []
+
 partidasNivel = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
 jugadas = {"t": ["l", "p"], "p": ["r", "s"], "r": ["l", "t"], "l": ["p", "s"], "s": ["r", "t"]}
 simbologia = {"r": "Roca", "p": "Papel", "t": "Tijeras", "l": "Lagarto", "s": "Spock"}
@@ -22,6 +23,7 @@ def main():
     continuar = True
     
     nombreJugador = obtenerNombre()
+    limpiarPantalla()
     
         
     while continuar == True:
@@ -30,7 +32,7 @@ def main():
         resultado = ""
         
         if(opcion == 6):
-            estadisticas()
+            estadisticasGlobales()
         elif(opcion == 7):
             limpiarPantalla()
             continuar = False
@@ -41,29 +43,27 @@ def main():
         contarIteracionesRonda = 0
         while mismaRonda == True:
             
-            jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
+            
             jugadaUsuario = obtenerJugadaUsuario()
             
             if jugadaUsuario == "x":
+                limpiarPantalla() 
                 mismaRonda = False
                 historialJugador = historialJugador[:(len(historialJugador) - 1)]
-                limpiarPantalla()
-                print(f"Marcador final: {contarIteracionesRonda} Ronda(s) jugada(s)\nVictorias de {nombreJugador}: {marcador['u']}\nVictorias de la Máquina: {marcador['m']}\nEmpates: {marcador['e']}\n")
-                if marcador["u"] > marcador["m"]:
-                    print(f"Has ganado, {nombreJugador.capitalize()}!")
-                elif marcador["u"] < marcador["m"]:
-                    print("La victoria es de La máquina. Mejor suerte la próxima...")
-                else:
-                    print("Resultado final: Empate!")
+                estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador)
+                print('Presione "Enter" para continuar...')
+                keyboard.wait('enter', True)
+                limpiarPantalla()                
             else:
+                jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
                 mostrarMarcador(resultado, nombreJugador, jugadaUsuario, jugadaMaquina)
                 marcador[resultado] += 1
                 partidasNivel[str(opcion)] += 1
                 contarIteracionesRonda += 1
-                time.sleep(2)
-                #print('Presione "Enter" para continuar...')
-                #keyboard.wait('enter', True)
+                print('Presione "Enter" para continuar...')
+                keyboard.wait('enter', True)
+                limpiarPantalla()
                 
     mensajeDespedida(nombreJugador)
 
@@ -144,36 +144,7 @@ def menuPrincipal():
     
     return int(nivel)
 
-def estadisticas():
-    """
-    Procedimiento que retorna las estadísticaas del juego en general e información relevante para el usuario.
-    E y R:
-        - Ninguna
-    S:
-        - Imprime la información relevante en pantalla
-    """
-    limpiarPantalla()
-    if len(historialJugador) == 0:
-        print("Aún no se han jugado partidas :p\nPrueba a elegir primero un nivel!")
-    else:
-        victorias = 0
-        derrotas = 0
-        empates = 0
-        totalGlobal = 0
-        for x in partidasNivel.values():
-            totalGlobal += x
-            
-        for x in range(len(historialJugador)):
-            if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
-                victorias =+ 1
-            elif verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
-                derrotas =+ 1
-            else:
-                empates += 1
-        print(f"Victorias: {victorias}\t{float(victorias) / len(historialJugador) * 100}%")
-        print(f"Derrotas: {derrotas}\t{float(derrotas) / len(historialJugador) * 100}%")
-        print(f"Empates: {empates}\t{float(empates) / len(historialJugador) * 100}%")
-        print(f"\nPartidas totales: {totalGlobal}\nNivel 1: {partidasNivel['1']}\nNivel 2: {partidasNivel['2']}\nNivel 3: {partidasNivel['3']}\nNivel 4: {partidasNivel['4']}\nNivel 5: {partidasNivel['5']}\n")
+
 
 def validarNivel(n):
     try:
@@ -236,9 +207,10 @@ def obtenerJugadaMaquina(nivel, resultado):
     """
     global historialMaquina
     jugada = ""
-    if(nivel == 1):
+    if(nivel == 1):        
         jugada = primerNivel()
         historialMaquina += jugada
+        print(jugada)
         return jugada
     elif(nivel == 2):
         jugada = segundoNivel()
@@ -408,6 +380,60 @@ def eliminarRepetido(L):
     return L
 
 
+
+def estadisticasGlobales():
+    """
+    Procedimiento que retorna las estadísticaas del juego en general e información relevante para el usuario.
+    E y R:
+        - Ninguna
+    S:
+        - Imprime la información relevante en pantalla
+    """
+    limpiarPantalla()
+    if len(historialJugador) == 0:
+        print("Aún no se han jugado partidas :p\nPrueba a elegir primero un nivel!")
+    else:
+        victorias = 0
+        derrotas = 0
+        empates = 0
+        totalGlobal = 0
+        
+        for x in partidasNivel.values():
+            totalGlobal += x
+            
+        for x in range(len(historialJugador)):
+            if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
+                victorias =+ 1
+            elif verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
+                derrotas =+ 1
+            else:
+                empates += 1
+                
+        print(f"Victorias: \t{victorias} \t{victorias * 100 / len(historialJugador)}%")
+        print(historialJugador)
+        print(f"Derrotas: \t{derrotas} \t{derrotas * 100 / len(historialJugador)}%")
+        print(historialMaquina)
+        print(f"Empates: \t{empates} \t{empates * 100 / len(historialJugador)}%")
+        print(f"\nPartidas totales: {totalGlobal}\nNivel 1: {partidasNivel['1']}\nNivel 2: {partidasNivel['2']}" +
+              f"\nNivel 3: {partidasNivel['3']}\nNivel 4: {partidasNivel['4']}\nNivel 5: {partidasNivel['5']}\n")
+        
+        print('\nPresione "Enter" para continuar...')
+        keyboard.wait('enter', True)
+        limpiarPantalla()
+
+
+def estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador):
+    print("¡Ronda finalizada, estas son las estadísticas de esta ronda!")
+    print(f"Marcador final: {contarIteracionesRonda} Ronda(s) jugada(s)\nVictorias de {nombreJugador}: " 
+          + f"{marcador['u']}\nVictorias de la Máquina: {marcador['m']}\nEmpates: {marcador['e']}\n")
+    print(historialJugador)
+    print(historialMaquina)
+    if marcador["u"] > marcador["m"]:
+        print(f"Has ganado, {nombreJugador.capitalize()}!")
+    elif marcador["u"] < marcador["m"]:
+        print("La victoria es de La máquina. Mejor suerte la próxima...")
+    else:
+        print("Resultado final: Empate!")
     
 def mensajeDespedida(nombreJugador):
     """
