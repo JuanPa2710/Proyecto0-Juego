@@ -51,9 +51,10 @@ def main():
                 mismaRonda = False
                 historialJugador = historialJugador[:(len(historialJugador) - 1)]
                 estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador)
+                #time.sleep(5)
                 print('Presione "Enter" para continuar...')
                 keyboard.wait('enter', True)
-                limpiarPantalla()                
+                limpiarPantalla()
             else:
                 jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
@@ -61,6 +62,7 @@ def main():
                 marcador[resultado] += 1
                 partidasNivel[str(opcion)] += 1
                 contarIteracionesRonda += 1
+                #time.sleep(3)
                 print('Presione "Enter" para continuar...')
                 keyboard.wait('enter', True)
                 limpiarPantalla()
@@ -210,7 +212,6 @@ def obtenerJugadaMaquina(nivel, resultado):
     if(nivel == 1):        
         jugada = primerNivel()
         historialMaquina += jugada
-        print(jugada)
         return jugada
     elif(nivel == 2):
         jugada = segundoNivel()
@@ -396,11 +397,6 @@ def estadisticasGlobales():
         victorias = 0
         derrotas = 0
         empates = 0
-        totalGlobal = 0
-        
-        for x in partidasNivel.values():
-            totalGlobal += x
-            
         for x in range(len(historialJugador)):
             if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
                 victorias =+ 1
@@ -409,25 +405,36 @@ def estadisticasGlobales():
             else:
                 empates += 1
                 
-        print(f"Victorias: \t{victorias} \t{victorias * 100 / len(historialJugador)}%")
-        print(historialJugador)
-        print(f"Derrotas: \t{derrotas} \t{derrotas * 100 / len(historialJugador)}%")
-        print(historialMaquina)
-        print(f"Empates: \t{empates} \t{empates * 100 / len(historialJugador)}%")
-        print(f"\nPartidas totales: {totalGlobal}\nNivel 1: {partidasNivel['1']}\nNivel 2: {partidasNivel['2']}" +
-              f"\nNivel 3: {partidasNivel['3']}\nNivel 4: {partidasNivel['4']}\nNivel 5: {partidasNivel['5']}\n")
+        totalGlobal = 0
+        for x in partidasNivel.values():
+            totalGlobal += x
+            
+        usoArmas = {"r": 0, "p": 0, "t": 0, "l": 0, "s": 0}
+        for x in historialJugador:
+            usoArmas[x] = historialJugador.count(x)
+            
+        print(f"Victorias: \t{victorias} \t{victorias * 100 // len(historialJugador)}%")
+        print(f"Derrotas: \t{derrotas} \t{derrotas * 100 // len(historialJugador)}%")
+        print(f"Empates: \t{empates} \t{empates * 100 // len(historialJugador)}%")
+        print(f"\nPartidas totales: \t\t{totalGlobal}\nNivel 1: \t\t{partidasNivel['1']}\nNivel 2: \t\t{partidasNivel['2']}" +
+              f"\nNivel 3: \t\t{partidasNivel['3']}\nNivel 4: \t\t{partidasNivel['4']}\nNivel 5: \t\t{partidasNivel['5']}\n")
+        print(f"Total de armas usadas: {len(historialJugador)}")
+        print(f"Roca: \t{usoArmas['r']} \t{usoArmas['r'] * 100 // len(historialJugador)}%")
+        print(f"Papel: \t{usoArmas['p']} \t{usoArmas['p'] * 100 // len(historialJugador)}%")
+        print(f"Tijeras: \t{usoArmas['t']} \t{usoArmas['t'] * 100 // len(historialJugador)}%")
+        print(f"Lagarto: \t{usoArmas['l']} \t{usoArmas['l'] * 100 // len(historialJugador)}%")
+        print(f"Spock: \t{usoArmas['s']} \t{usoArmas['s'] * 100 // len(historialJugador)}%")
         
+        time.sleep(5)
         print('\nPresione "Enter" para continuar...')
         keyboard.wait('enter', True)
         limpiarPantalla()
 
 
 def estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador):
-    print("¡Ronda finalizada, estas son las estadísticas de esta ronda!")
+    print("¡Ronda finalizada!\n")
     print(f"Marcador final: {contarIteracionesRonda} Ronda(s) jugada(s)\nVictorias de {nombreJugador}: " 
           + f"{marcador['u']}\nVictorias de la Máquina: {marcador['m']}\nEmpates: {marcador['e']}\n")
-    print(historialJugador)
-    print(historialMaquina)
     if marcador["u"] > marcador["m"]:
         print(f"Has ganado, {nombreJugador.capitalize()}!")
     elif marcador["u"] < marcador["m"]:
@@ -444,3 +451,4 @@ def mensajeDespedida(nombreJugador):
     - Texto de despedida
     """
     print("Gracias por jugar, " + nombreJugador + ". Hasta la próxima...")
+
