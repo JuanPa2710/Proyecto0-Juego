@@ -27,14 +27,13 @@ def main():
     continuar = True
     
     nombreJugador = obtenerNombre()
-    limpiarPantalla()
-    
         
     while continuar == True:
         opcion = menuPrincipal()
         mismaRonda = False
         resultado = ""
-        historialArmasRonda = []
+        histArmasRondaJug = []
+        histArmasRondaMaq = []
         
         if(opcion == 6):
             estadisticasGlobales()
@@ -57,9 +56,8 @@ def main():
                 historialJugador = historialJugador[:(len(historialJugador) - 1)]
                 estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador)
                 #time.sleep(5)
-                print('Presione "Enter" para continuar...')
+                print('Presiona "Enter" para continuar...')
                 keyboard.wait('enter', True)
-                limpiarPantalla()
             else:
                 jugadaMaquina = obtenerJugadaMaquina(opcion, resultado)
                 resultado = verificarResultado(jugadaMaquina, jugadaUsuario)
@@ -70,7 +68,7 @@ def main():
                 histArmasRondaJug += jugadaUsuario
                 histArmasRondaMaq += jugadaMaquina
                 #time.sleep(3)
-                print('Presione "Enter" para continuar...')
+                print('Presiona "Enter" para continuar...')
                 keyboard.wait('enter', True)
                 limpiarPantalla()
                 
@@ -143,10 +141,12 @@ def menuPrincipal():
     Salidas:
     -Devuelve el nivel de dificultad, la página de estadísticas o cierra el juego.
     """
+    limpiarPantalla()
     nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
 
     while validarNivel(nivel) == False or (int(nivel) < 1 or int(nivel) > 7 ):
-        print("La opción ingresada no es valida. Por favor ingresela de nuevo")
+        limpiarPantalla()
+        print("La opción ingresada no es válida. Por favor inténtelo de nuevo.")
         nivel = input("\nFacil = 1\nMedio = 2\nDifícil = 3\nExperto = 4\nExtremo = 5\n\nEstadísticas de juego = 6\nSalir del Juego = 7\n\nEscoja el nivel de dificultad: ")
 
     limpiarPantalla()
@@ -190,7 +190,7 @@ def obtenerJugadaUsuario():
     global historialJugador
     
     arma = input("\nOpciones de arma: " +
-                 "\n\nR para piedra \nP para papel \nT para tijera \nL para lagarto \nS para spock \nX para salir \n\nEscoja su arma: ")
+                 "\n\nR para Roca \nP Para papel \nT para Tijera \nL para Lagarto \nS para Spock \nX para salir \n\nEscoja su arma: ")
 
     armaLower = arma.lower()
     
@@ -399,7 +399,9 @@ def estadisticasGlobales():
     """
     limpiarPantalla()
     if len(historialJugador) == 0:
-        print("Aún no se han jugado partidas :p\nPrueba a elegir primero un nivel!")
+        print(f"Aún no hay datos para analizar...\nNecesitas jugar un nivel primero.")
+        print('\nPresiona "Enter" para continuar...')
+        keyboard.wait('enter', True)
     else:
         victorias = 0
         derrotas = 0
@@ -423,56 +425,59 @@ def estadisticasGlobales():
         print(f"Victorias: \t{victorias} \t{victorias * 100 // len(historialJugador)}%")
         print(f"Derrotas: \t{derrotas} \t{derrotas * 100 // len(historialJugador)}%")
         print(f"Empates: \t{empates} \t{empates * 100 // len(historialJugador)}%")
-        print(f"\nPartidas totales: \t\t{totalGlobal}\nNivel 1: \t\t{partidasNivel['1']}\nNivel 2: \t\t{partidasNivel['2']}" +
-              f"\nNivel 3: \t\t{partidasNivel['3']}\nNivel 4: \t\t{partidasNivel['4']}\nNivel 5: \t\t{partidasNivel['5']}\n")
+        print(f"\nPartidas totales: {totalGlobal}\n\nNivel 1: \t{partidasNivel['1']}\nNivel 2: \t{partidasNivel['2']}" +
+              f"\nNivel 3: \t{partidasNivel['3']}\nNivel 4: \t{partidasNivel['4']}\nNivel 5: \t{partidasNivel['5']}\n\n")
         
-        print(f"Total de armas usadas: {len(historialJugador)}")
-        print(f"Roca: {usoArmas['r']} \t{usoArmas['r'] * 100 // len(historialJugador)}%")
-        print(f"Papel: {usoArmas['p']} \t{usoArmas['p'] * 100 // len(historialJugador)}%")        
-        print(f"Tijeras: {usoArmas['t']} \t{usoArmas['t'] * 100 // len(historialJugador)}%")
-        print(f"Lagarto: {usoArmas['l']} \t{usoArmas['l'] * 100 // len(historialJugador)}%")        
-        print(f"Spock: {usoArmas['s']} \t{usoArmas['s'] * 100 // len(historialJugador)}%")
+        print(f"Total de armas usadas: {len(historialJugador)}\n")
+        print(f"Roca:   \t{usoArmas['r']} \t{usoArmas['r'] * 100 // len(historialJugador)}%")
+        print(f"Papel:  \t{usoArmas['p']} \t{usoArmas['p'] * 100 // len(historialJugador)}%")        
+        print(f"Tijeras: \t{usoArmas['t']} \t{usoArmas['t'] * 100 // len(historialJugador)}%")
+        print(f"Lagarto: \t{usoArmas['l']} \t{usoArmas['l'] * 100 // len(historialJugador)}%")        
+        print(f"Spock:  \t{usoArmas['s']} \t{usoArmas['s'] * 100 // len(historialJugador)}%")
         
-        time.sleep(5)
-        print('\nPresione "Enter" para continuar...')
+        #time.sleep(5)
+        print('\nPresiona "Enter" para continuar...')
         keyboard.wait('enter', True)
         limpiarPantalla()
 
 
 def estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador):
-    print("¡Ronda finalizada!\n")
-    print(f"Marcador final: {contarIteracionesRonda} Ronda(s) jugada(s)\nVictorias de {nombreJugador}: " 
-          + f"{marcador['u']}\nVictorias de la Máquina: {marcador['m']}\nEmpates: {marcador['e']}\n")
+    global histArmasRondaJug
+    if len(histArmasRondaJug) != 0:
+        print("¡Ronda finalizada!\n")
+        print(f"Marcador final: {contarIteracionesRonda} Ronda(s) jugada(s)\nVictorias de {nombreJugador.capitalize()}: " 
+              + f"{marcador['u']}\nVictorias de la Máquina: {marcador['m']}\nEmpates: {marcador['e']}\n")
 
-    if marcador["u"] > marcador["m"]:
-        print(f"Has ganado, {nombreJugador.capitalize()}!")
-    elif marcador["u"] < marcador["m"]:
-        print("La victoria es de La máquina. Mejor suerte la próxima...")
+        if marcador["u"] > marcador["m"]:
+            print(f"Has ganado, {nombreJugador.capitalize()}!")
+        elif marcador["u"] < marcador["m"]:
+            print("La victoria es de La máquina. Mejor suerte la próxima...")
+        else:
+            print("Resultado final: Empate!")
+
+        
+        print("\n"*2)
+        
+        print("Total de armas usadas en la partida\n")
+        print(" " * 17 + f"{nombreJugador.capitalize()}")
+        print(" " * 10 + "Cant. Usos | Porcentaje\n")
+        print(f"Roca: {' ' * 8} {contarArmas('r', 'u')}{' ' * 10}{contarArmas('r', 'u') * 100 // len(histArmasRondaJug)}%")    
+        print(f"Papel: {' ' * 8}{contarArmas('p', 'u')}{' ' * 10}{contarArmas('p', 'u') * 100 // len(histArmasRondaJug)}%")    
+        print(f"Tijeras: {' ' * 6}{contarArmas('t', 'u')}{' ' * 10}{contarArmas('t', 'u') * 100 // len(histArmasRondaJug)}%")    
+        print(f"Lagarto: {' ' * 6}{contarArmas('l', 'u')}{' ' * 10}{contarArmas('l', 'u') * 100 // len(histArmasRondaJug)}%")    
+        print(f"Spock: {' ' * 8}{contarArmas('s', 'u')}{' ' * 10}{contarArmas('s', 'u') * 100 // len(histArmasRondaJug)}%")
+        
+        print("\n")
+
+        print(" " * 18   + "Máquina")
+        print(" " * 10 + "Cant. Usos | Porcentaje\n")
+        print(f"Roca: {' ' * 8} {contarArmas('r', 'm')}{' ' * 10}{contarArmas('r', 'm') * 100 // len(histArmasRondaMaq)}%")    
+        print(f"Papel: {' ' * 7} {contarArmas('p', 'm')}{' ' * 10}{contarArmas('p', 'm') * 100 // len(histArmasRondaMaq)}%")    
+        print(f"Tijeras: {' ' * 5} {contarArmas('t', 'm')}{' ' * 10}{contarArmas('t', 'm') * 100 // len(histArmasRondaMaq)}%")    
+        print(f"Lagarto: {' ' * 5} {contarArmas('l', 'm')}{' ' * 10}{contarArmas('l', 'm') * 100 // len(histArmasRondaMaq)}%")    
+        print(f"Spock: {' ' * 7} {contarArmas('s', 'm')}{' ' * 10}{contarArmas('s', 'm') * 100 // len(histArmasRondaMaq)}%")
     else:
-        print("Resultado final: Empate!")
-
-    
-    print("\n"*2)
-    
-    print("Total de armas usadas en la partida\n")
-    print(" " * 17 + f"{nombreJugador}")
-    print(" " * 10 + "Cant. Usos | Porcentaje\n")
-    print(f"Roca: {' ' * 8} {contarArmas('r', 'u')}{' ' * 10}{contarArmas('r', 'u') * 100 // len(histArmasRondaJug)}%")    
-    print(f"Papel: {' ' * 8}{contarArmas('p', 'u')}{' ' * 10}{contarArmas('p', 'u') * 100 // len(histArmasRondaJug)}%")    
-    print(f"Tijeras: {' ' * 6}{contarArmas('t', 'u')}{' ' * 10}{contarArmas('t', 'u') * 100 // len(histArmasRondaJug)}%")    
-    print(f"Lagarto: {' ' * 6}{contarArmas('l', 'u')}{' ' * 10}{contarArmas('l', 'u') * 100 // len(histArmasRondaJug)}%")    
-    print(f"Spock: {' ' * 8}{contarArmas('s', 'u')}{' ' * 10}{contarArmas('s', 'u') * 100 // len(histArmasRondaJug)}%")
-    
-    print("\n")
-
-    print(" " * 18   + "Maquina")
-    print(" " * 10 + "Cant. Usos | Porcentaje\n")
-    print(f"Roca: {' ' * 8} {contarArmas('r', 'm')}{' ' * 10}{contarArmas('r', 'm') * 100 // len(histArmasRondaMaq)}%")    
-    print(f"Papel: {' ' * 7} {contarArmas('p', 'm')}{' ' * 10}{contarArmas('p', 'm') * 100 // len(histArmasRondaMaq)}%")    
-    print(f"Tijeras: {' ' * 5} {contarArmas('t', 'm')}{' ' * 10}{contarArmas('t', 'm') * 100 // len(histArmasRondaMaq)}%")    
-    print(f"Lagarto: {' ' * 5} {contarArmas('l', 'm')}{' ' * 10}{contarArmas('l', 'm') * 100 // len(histArmasRondaMaq)}%")    
-    print(f"Spock: {' ' * 7} {contarArmas('s', 'm')}{' ' * 10}{contarArmas('s', 'm') * 100 // len(histArmasRondaMaq)}%")
-
+        print("Regresando al menú principal...")
 def contarArmas(letra, jugador):
     
     if(jugador == "u"):
@@ -490,5 +495,4 @@ def mensajeDespedida(nombreJugador):
     Salidas:
     - Texto de despedida
     """
-    print("Gracias por jugar, " + nombreJugador + ". Hasta la próxima...")
-
+    print(f"Gracias por jugar, {nombreJugador.capitalize()}. Hasta la próxima...")
