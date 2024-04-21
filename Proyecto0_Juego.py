@@ -444,7 +444,7 @@ def quintoNivel(resultado):
                     posiblesJugadasUsuario += llave
 
             posibilidades = [x for x in jugadas if posiblesJugadasUsuario == jugadas[x]]
-            print(posibilidades)
+
         elif(resultado == "m" or resultado == "e"):
             #Aca obtiene la última jugada del usuario
             ultJugada = histArmasRondaJug[len(histArmasRondaJug) - 1]
@@ -486,6 +486,7 @@ def estadisticasGlobales():
     limpiarPantalla()
     if len(historialJugador) == 0:
         print(f"Aún no hay datos para analizar...\nNecesitas jugar un nivel primero.")
+        #time.sleep(3)
         print('\nPresiona "Enter" para continuar...')
         keyboard.wait('enter', True)
     else:
@@ -493,8 +494,6 @@ def estadisticasGlobales():
         derrotas = 0
         empates = 0
         for x in range(len(historialJugador)):
-            print(historialJugador)
-            print(historialMaquina)
             if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
                 victorias += 1
             elif verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
