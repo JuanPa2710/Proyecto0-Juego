@@ -8,7 +8,7 @@ histArmasRondaJug = []
 histArmasRondaMaq = []
 
 partidasNivel = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-jugadas = {"t": ["l", "p"], "p": ["r", "s"], "r": ["l", "t"], "l": ["p", "s"], "s": ["r", "t"]}
+jugadas = {"r": ["l", "t"], "p": ["r", "s"], "t": ["l", "p"], "l": ["p", "s"], "s": ["r", "t"]}
 simbologia = {"r": "Roca", "p": "Papel", "t": "Tijeras", "l": "Lagarto", "s": "Spock"}
 
 def main():
@@ -233,8 +233,9 @@ def obtenerJugadaMaquina(nivel, resultado):
         historialMaquina += jugada
         return jugada
     elif nivel == 5:
-        print("simular nivel 5")
-        raise Exception("Niven aún no implementado")
+        jugada = quintoNivel(resultado)
+        historialMaquina += jugada
+        return jugada
 
 def verificarResultado(jugadaUsuario, jugadaMaquina):
     """
@@ -302,8 +303,8 @@ def segundoNivel():
 
     for i in range(len(porcen), 2, -1):
         porcen.popitem()
+        
     posibilidades = []
-
     
     for llave in jugadas:
         for valor in porcen.values():            
@@ -370,7 +371,92 @@ def cuartoNivel(resultado):
         posibilidaes = eliminarRepetido(posibilidades)
         return posibilidades[randrange(len(posibilidades))]
 
+
+tipoUsuario = ""
+
+def quintoNivel(resultado):
+    """
+    Función que utiliza la estrategía Teoría "Principiantes y Expertos" esta
+    será explicada en la documentación.
+
+    Entradas y restriccciones:
+    -
+    Salidas:
+    -
+    """
+    global tipoUsuario    
+    posibilidades = []
     
+    if(len(histArmasRondaJug) < 1):
+        #Aca como el historial será 0, entonces es la primera ronda que es
+        #Donde se jugará papel para obtener el tipo de jugador
+        return "p"
+    elif(len(histArmasRondaJug) == 1):
+         #Acá ya se sabe el tipo de jugador, por lo cual se guarda en una
+         #Variable global el resultado para poder usarlo en todas las rondas
+        if(resultado == "m"):
+            tipoUsuario = "princi"
+        else:
+            tipoUsuario = "exper"
+
+
+    #Estos son los casos del principiante
+    if(tipoUsuario == "princi"):
+        #Aca obtiene la última jugada del usuario
+        ultJugada = histArmasRondaJug[len(histArmasRondaJug) - 1]
+
+        #Este es el caso de si la última partida la ganó el principiante
+        if(resultado == "u"):
+            #Aca simplemente obtiene quien le gana a la última jugada del usuario porque
+            #Se espera que haga la misma jugada
+            for llave in jugadas:           
+                if(ultJugada in jugadas[llave]):
+                    posibilidades += ultJugada
+        elif(resultado == "m" or resultado == "e"):
+            #Aca es el caso de que el usuario principiante pierda
+            #Acá se espera que el usuario cambie al arma que sigue en el nombre del juego
+            #Ejemplo, si juega roca, se espera que ahora juegue papel
+
+            #Acá simplemente se obitienen todas las jugadas que se pueden hacer
+            #Y a partir de la última jugada se guarda la que le sigue
+            letrasJugadas = ['r', 'p', 't', 'l', 's']
+            proxJugada = letrasJugadas[(letrasJugadas.index(ultJugada) + 1) % 5]
+
+            #Aca busca quien le ganan a la jugada que se obtuvo que se hará
+            for llave in jugadas:           
+                if(proxJugada in jugadas[llave]):
+                    posibilidades += llave
+
+    #Estos son los casos del experto
+    if(tipoUsuario == "exper"):     
+        #Este es el caso de si la última partida la ganó el experto
+        if(resultado == "u"):
+            #Aca obtiene la última jugada del usuario
+            ultJugada = histArmasRondaMaq[len(histArmasRondaMaq) - 1]
+            
+            letrasJugadas = ['r', 'p', 't', 'l', 's']
+            proxJugada = letrasJugadas[(letrasJugadas.index(ultJugada) + 1) % 5]
+            
+            posiblesJugadasUsuario = []
+            
+            for llave in jugadas:           
+                if(proxJugada in jugadas[llave]):
+                    posiblesJugadasUsuario += llave
+
+            posibilidades = [x for x in jugadas if posiblesJugadasUsuario == jugadas[x]]
+            print(posibilidades)
+        elif(resultado == "m" or resultado == "e"):
+            #Aca obtiene la última jugada del usuario
+            ultJugada = histArmasRondaJug[len(histArmasRondaJug) - 1]
+            
+            letrasJugadas = ['r', 'p', 't', 'l', 's']
+            proxJugada = letrasJugadas[(letrasJugadas.index(ultJugada) + 1) % 5]
+
+            posibilidades += proxJugada
+            
+                    
+    return posibilidades[randrange(len(posibilidades))]
+
 
 def eliminarRepetido(L):
     """
@@ -407,10 +493,12 @@ def estadisticasGlobales():
         derrotas = 0
         empates = 0
         for x in range(len(historialJugador)):
+            print(historialJugador)
+            print(historialMaquina)
             if verificarResultado(historialJugador[x], historialMaquina[x]) == "m":
-                victorias =+ 1
+                victorias += 1
             elif verificarResultado(historialJugador[x], historialMaquina[x]) == "u":
-                derrotas =+ 1
+                derrotas += 1
             else:
                 empates += 1
                 
@@ -442,6 +530,17 @@ def estadisticasGlobales():
 
 
 def estadisticasRonda(contarIteracionesRonda, nombreJugador, marcador):
+    """
+    Función que muestras las estadísticas al final de cada partida.
+    Muestra el marcador final de la partida, las victorias del usuario,
+    las victorias de la maquina, el resultado final de la partida, cantidad y
+    porcentajes que uso el arma el usuario y la maquina
+
+    Entradas y restricciones:
+    -IteracionesRonda: número de rondas que se jugaron
+    -NombreJugador: este es el nombre del jugador
+    -Marcador: diccionario con los resultados de las partidas"""
+    
     global histArmasRondaJug
     if len(histArmasRondaJug) != 0:
         print("¡Ronda finalizada!\n")
@@ -496,3 +595,5 @@ def mensajeDespedida(nombreJugador):
     - Texto de despedida
     """
     print(f"Gracias por jugar, {nombreJugador.capitalize()}. Hasta la próxima...")
+
+main()
